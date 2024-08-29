@@ -1,0 +1,108 @@
+---
+server: shiny
+filters: [surveydown]
+---
+
+```{r}
+#| context: setup
+#| echo: false
+#| warning: false
+#| message: false
+
+# Run this in your R Console to install the latest version of the package:
+# remotes::install_github("surveydown-dev/surveydown", force = TRUE)
+
+# Run this to install or update the Quarto extension to the latest version:
+# surveydown::sd_update_extension()
+
+# Load the package
+library(surveydown)
+
+# Run initial setup function (essential - do not delete)
+sd_setup()
+```
+
+::: {#welcome .sd-page}
+
+# Testing Reactivity
+
+```{r}
+sd_question(
+  type  = "text",
+  id    = "name",
+  label = "my name is:"
+)
+```
+
+<br>
+
+```{r}
+sd_question(
+  type  = "numeric",
+  id    = "age",
+  label = "my age is:"
+)
+```
+
+```{r}
+sd_next(next_page = 'end')
+```
+
+:::
+
+::: {#end .sd-page}
+
+My name is, `r sd_display_value("name")`!
+
+my age is, `r sd_display_value("age")`!
+
+:::
+
+
+```{r}
+#| context: server
+
+##################
+# database setup #
+##################
+
+# surveydown stores data on a database that you define at https://supabase.com/
+# To connect to a database to store the survey data, update this with details
+# from your supabase account and database. For this demo, we set pause = TRUE
+# which will ignore the other settings and won't attempt to connect to the database.
+# See documentation for details at https://surveydown.org/store-data
+
+db <- sd_database(
+  host   = "",
+  dbname = "",
+  port   = "",
+  user   = "",
+  table  = "",
+  pause  = TRUE
+)
+
+################
+# config setup #
+################
+
+# Use the sd_config() function to customize features in your survey, like
+# logic to conditionally display questions or skip to pages based on responses
+# to skip other questions in your survey. See documentation for details at
+# https://surveydown.org/config
+
+config <- sd_config()
+
+####################################
+# Don't change anything below here #
+####################################
+
+# The sd_server function initiates your survey - don't change this
+
+sd_server(
+  input   = input,
+  output  = output,
+  session = session,
+  config  = config,
+  db      = db
+)
+```
